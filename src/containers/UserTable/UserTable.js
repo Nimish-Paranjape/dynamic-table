@@ -1,32 +1,27 @@
 import React from 'react';
 import './UserTable.css';
-import TableRow from '../../components/TableRow/TableRow'
+import { connect } from 'react-redux';
+import { updateUsers, updateHobbies } from '../../store/actions';
+import TableRow from '../../components/TableRow/TableRow';
 import NewRow from '../../components/NewRow/NewRow';
 
 class UserTable extends React.Component {
     state = {
-        users: [
-            {name: 'Female1', gender: 'female', hobbies: 'reading', active: 'No', editing: false},
-            {name: 'Female2', gender: 'female', hobbies: 'music', active: 'Yes', editing: false},
-            {name: 'Female3', gender: 'female', hobbies: 'pilates', active: 'Yes', editing: false}
-        ],
         currentlyEditing: [],
-        addingRow: false,
-        currentlyAdding: null,
-        hobbies: ['dancing']
+        currentlyAdding: null
     }
 
     toggleEdit = id => {
         let currentlyEditing = [...this.state.currentlyEditing];
-        let users = [...this.state.users];
+        let users = [...this.props.users];
         users[id].editing  = !users[id].editing;
         console.log(users[id]);
-        if(currentlyEditing[id]){
+        if(currentlyEditing[id])
             currentlyEditing[id] = undefined;
-        }
         else
             currentlyEditing[id] = {...users[id]};
-        this.setState({users: users, currentlyEditing: currentlyEditing});
+        console.log(currentlyEditing);
+        this.setState({currentlyEditing: currentlyEditing});
     }
 
     toggleAdd = () => {
@@ -39,58 +34,63 @@ class UserTable extends React.Component {
         };
         if(this.state.currentlyAdding)
             currentlyAdding = null;
-        this.setState({addingRow: !this.state.addingRow, currentlyAdding: currentlyAdding});
+        this.setState({currentlyAdding: currentlyAdding});
     }
 
     changeHandler = (id, event) => {
         let currentlyEditing = [...this.state.currentlyEditing];
-        console.log(event.target.name, '---', event.target.value);
+        // console.log(event.target.name, '---', event.target.value);
         currentlyEditing[id][event.target.name] = event.target.value;
+        console.log(currentlyEditing);
         this.setState({currentlyEditing: currentlyEditing});
     }
 
     updateHandler = id => {
         let currentlyEditing = [...this.state.currentlyEditing];
-        let users = [...this.state.users];
+        let users = [...this.props.users];
         let hobbies = [];
         currentlyEditing[id].editing = false;
         users[id] = currentlyEditing[id];
         currentlyEditing[id] = undefined;
         hobbies = users[id].hobbies.split(',');
         hobbies.forEach((ele, index, arr) => arr[index] = ele.trim().toLowerCase());
-        let updatedHobbies = [...new Set(this.state.hobbies.concat(hobbies))];
+        let updatedHobbies = [...new Set(this.props.hobbies.concat(hobbies))];
         console.log(updatedHobbies);
-        this.setState({users: users, currentlyEditing: currentlyEditing, hobbies: updatedHobbies});
+        this.props.updateUsers(users);
+        this.props.updateHobbies(updatedHobbies);
+        this.setState({currentlyEditing: currentlyEditing});
     }
 
     deleteHandler = id => {
-        let users = [...this.state.users];
+        let users = [...this.props.users];
         let currentlyEditing = [...this.state.currentlyEditing];
         users.splice(id, 1);
         currentlyEditing.splice(id, 1);
-        this.setState({users: users});
+        this.props.updateUsers(users);
+        this.setState({currentlyEditing: currentlyEditing});
     }
 
     newRowInputChangeHandler = event => {
         let currentlyAdding = {...this.state.currentlyAdding};
-        console.log(event.target.name, '---', event.target.value);
+        // console.log(event.target.name, '---', event.target.value);
         currentlyAdding[event.target.name] = event.target.value;
         this.setState({currentlyAdding: currentlyAdding});
     }
 
     addHandler = () => {
-        let users = [...this.state.users];
+        let users = [...this.props.users];
         let newUser = {...this.state.currentlyAdding};
         let hobbies = [];
         users.push(newUser);
         hobbies = newUser.hobbies.split(',');
         hobbies.forEach((ele, index, arr) => arr[index] = ele.trim().toLowerCase());
-        let updatedHobbies = [...new Set(this.state.hobbies.concat(hobbies))];
-        this.setState({users: users, currentlyAdding: null, hobbies: updatedHobbies, addingRow: false});
+        let updatedHobbies = [...new Set(this.props.hobbies.concat(hobbies))];
+        this.props.updateUsers(users);
+        this.props.updateHobbies(updatedHobbies);
+        this.setState({currentlyAdding: null});
     }
 
     render() {
-        console.log(this.state.currentlyEditing);
         return (
             <div className='container-div'>
                 <div className='user-table'>
@@ -105,13 +105,13 @@ class UserTable extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {this.state.addingRow ? 
+                            {this.state.currentlyAdding ? 
                                 <NewRow 
                                     inputChange={this.newRowInputChangeHandler}
                                     cancelAdd={this.toggleAdd}
                                     addRow={this.addHandler}
-                                    list={this.state.hobbies}/> : null}
-                            {this.state.users.map((user, index) => (
+                                    list={this.props.hobbies}/> : null}
+                            {this.props.users.map((user, index) => (
                                 <TableRow
                                     key={index}
                                     id={index} 
@@ -120,7 +120,7 @@ class UserTable extends React.Component {
                                     update={this.updateHandler}
                                     delete={this.deleteHandler}
                                     change={this.changeHandler}
-                                    list={this.state.hobbies} />
+                                    list={this.props.hobbies} />
                             ))}
                         </tbody>
                     </table>
@@ -131,4 +131,18 @@ class UserTable extends React.Component {
     }
 }
 
-export default UserTable
+const mapStateToProps = state => {
+    return {
+        users: state.users,
+        hobbies: state.hobbies
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        updateUsers: users => dispatch(updateUsers(users)),
+        updateHobbies: hobbies => dispatch(updateHobbies(hobbies)),
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserTable);
