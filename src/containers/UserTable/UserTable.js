@@ -12,7 +12,6 @@ class UserTable extends React.Component {
     }
 
     componentDidMount() {
-        console.log('executed...');
         this.props.fetchDataInit({});
     }
 
@@ -46,7 +45,6 @@ class UserTable extends React.Component {
     changeHandler = (id, event) => {
         let currentlyEditing = {...this.state.currentlyEditing};
         currentlyEditing[id][event.target.name] = event.target.value;
-        console.log(currentlyEditing);
         this.setState({currentlyEditing: currentlyEditing});
     }
 
@@ -87,8 +85,8 @@ class UserTable extends React.Component {
     render() {
         return (
             <div className='container-div'>
-                <div className='user-table'>
-                    <table>
+                <div className='table-div'>
+                    <table className='user-table'>
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -119,7 +117,7 @@ class UserTable extends React.Component {
                         </tbody>
                     </table>
                 </div>
-                <button className='btn add-btn' onClick={this.toggleAdd}>Add</button>
+                <button className='btn add-btn' onClick={this.toggleAdd} >Add<i className="fa fa-plus"></i></button>
             </div>
         );
     }

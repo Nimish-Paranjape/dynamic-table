@@ -1,16 +1,69 @@
 html, body {
     box-sizing: border-box;
+    font-family: 'Raleway', sans-serif;
 }
 
-.user-table {
+.container-div {
+    margin: 2rem 0;
+}
+
+.table-div {
     display: inline-block;
     vertical-align: top;
 }
 
-.user-table table {
-    margin: auto;
+.user-table {
+    border-collapse: collapse;
+    font-size: 1.5em;
+    min-width: 400px;
+    border-bottom: 0.5rem solid #ff9900;
+}
+
+.user-table thead tr {
+    background-color: #ff9900; 
+    text-align: center;
+    font-weight: bold;
+    color: #ffff;
+}
+
+.user-table tr:nth-child(even) {
+    background-color: #ece7df;
+}
+
+.user-table th, td {
+    padding: 12px 15px;
+}
+
+button {
+    background-color: #ff9900;
+    border-radius: 5px;
+}
+
+button:hover {
+    cursor: pointer;
+    color: #ff9900;
+    background: black;
+}
+
+.fa {
+    cursor: pointer;
+    margin: 0 0.5rem;
+}
+
+.fa:hover {
+    font-size: xx-large;
 }
 
 .add-btn {
-    color: red;
+    font-size: 1rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.add-btn:hover {
+    font-size: x-large;
+}
+
+.edit-div select:hover {
+    cursor: pointer;
 }

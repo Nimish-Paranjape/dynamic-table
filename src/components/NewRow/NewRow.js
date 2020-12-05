@@ -40,8 +40,8 @@ const newRow = props => (
             </div>
         </td>
         <td>
-            <button className='btn' onClick={props.addRow}>Add</button>
-            <button className='btn' onClick={props.cancelAdd}>Cancel</button>
+            <i className="fa fa-check" onClick={props.addRow}></i>
+            <i className="fa fa-close" onClick={props.cancelAdd}></i>
         </td>
     </tr>
 );

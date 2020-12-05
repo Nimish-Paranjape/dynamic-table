@@ -8,8 +8,8 @@ const tableRow = props => {
             <td><div>{props.user.hobbies}</div></td>
             <td><div>{props.user.active}</div></td>
             <td>
-                <button onClick={() => props.toggle(props.id)}>Edit</button>
-                <button onClick={() => props.delete(props.id)}>Delete</button>
+                <i className="fa fa-pencil" onClick={() => props.toggle(props.id)}></i>
+                <i className="fa fa-trash-o" onClick={() => props.delete(props.id)}></i>
             </td>
         </tr>
     )
@@ -18,7 +18,7 @@ const tableRow = props => {
         tableRow = (
             <tr>
                 <td>
-                    <div>
+                    <div className='edit-div'>
                         <input 
                             defaultValue={props.user.name} 
                             name='name' 
@@ -56,8 +56,8 @@ const tableRow = props => {
                     </div>
                 </td>
                 <td>
-                    <button onClick={() => props.update(props.id)}>Update</button>
-                    <button onClick={() => props.toggle(props.id)}>Cancel</button>
+                    <i className="fa fa-check" onClick={() => props.update(props.id)}></i>
+                    <i className="fa fa-close" onClick={() => props.toggle(props.id)}></i>
                 </td>
             </tr>
         )

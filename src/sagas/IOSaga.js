@@ -17,8 +17,7 @@ function* fetchDataSaga(action) {
     if(usersData)
         users = JSON.parse(usersData);
     if(hobbiesData)
-        hobbies = JSON.parse(hobbiesData)
-    console.log(users, hobbies);
+        hobbies = JSON.parse(hobbiesData);
     yield put(fetchData({users: users, hobbies: hobbies, currentlyEditing: action.payload}));
 }
 

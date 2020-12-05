@@ -15,7 +15,6 @@ export const addUser = updatedObj => {
 }
 
 export const fetchDataInit = currentlyEditing => {
-    console.log('fired...');
     return {
         type: actionTypes.FETCH_DATA_INIT,
         payload: currentlyEditing
