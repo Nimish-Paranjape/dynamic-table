@@ -1,30 +1,34 @@
 import * as actionTypes from './constants';
 
 const initialState = {
-    users: [
-        {name: 'Female1', gender: 'female', hobbies: 'reading', active: 'No', editing: false},
-        {name: 'Female2', gender: 'female', hobbies: 'music', active: 'Yes', editing: false},
-        {name: 'Female3', gender: 'female', hobbies: 'pilates', active: 'Yes', editing: false}
-    ],
-    hobbies: ['dancing']
+    users: [],
+    hobbies: []
 }
 
 const reducer = (state=initialState, action) => {
     switch(action.type) {
-        case actionTypes.UPDATE_USERS:
+        case actionTypes.FETCH_DATA:
+            let keys = Object.keys(action.payload.currentlyEditing);
+            let users = action.payload.users.map((user, index) => {
+                return {
+                    ...user,
+                    editing: keys.includes(''+index) ? true : false
+                };
+            });
+            return {
+                ...state,
+                users: users,
+                hobbies: action.payload.hobbies
+            };
+        case actionTypes.UPDATE_USERS_LOCAL:
             return {
                 ...state,
                 users: action.payload
             };
-        case actionTypes.UPDATE_HOBBIES:
-            return {
-                ...state,
-                hobbies: action.payload
-            };
         default: 
             return {
                 ...state
-            }
+            };
     }
 }
 

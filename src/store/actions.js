@@ -1,9 +1,44 @@
 import * as actionTypes from './constants';
 
-export const updateUsers = users => {
-    return {type: actionTypes.UPDATE_USERS, payload: users}
+export const updateData = updatedObj => {
+    return {
+        type: actionTypes.UPDATE_DATA, 
+        payload: updatedObj
+    };
 }
 
-export const updateHobbies = hobbies => {
-    return {type: actionTypes.UPDATE_HOBBIES, payload: hobbies}
+export const addUser = updatedObj => {
+    return {
+        type: actionTypes.ADD_USER,
+        payload: updatedObj
+    };
+}
+
+export const fetchDataInit = currentlyEditing => {
+    console.log('fired...');
+    return {
+        type: actionTypes.FETCH_DATA_INIT,
+        payload: currentlyEditing
+    };
+}
+
+export const fetchData = data => {
+    return {
+        type: actionTypes.FETCH_DATA,
+        payload: data
+    };
+}
+
+export const deleteUser = id => {
+    return {
+        type: actionTypes.DELETE_USER,
+        payload: id
+    }
+}
+
+export const updateUsersLocal = users => {
+    return {
+        type: actionTypes.UPDATE_USERS_LOCAL,
+        payload: users
+    }
 }

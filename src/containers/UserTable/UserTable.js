@@ -1,26 +1,33 @@
 import React from 'react';
 import './UserTable.css';
 import { connect } from 'react-redux';
-import { updateUsers, updateHobbies } from '../../store/actions';
+import { updateData, addUser, fetchDataInit, deleteUser, updateUsersLocal } from '../../store/actions';
 import TableRow from '../../components/TableRow/TableRow';
 import NewRow from '../../components/NewRow/NewRow';
 
 class UserTable extends React.Component {
     state = {
-        currentlyEditing: [],
+        currentlyEditing: null,
         currentlyAdding: null
     }
 
+    componentDidMount() {
+        console.log('executed...');
+        this.props.fetchDataInit({});
+    }
+
     toggleEdit = id => {
-        let currentlyEditing = [...this.state.currentlyEditing];
+        let currentlyEditing = {...this.state.currentlyEditing};
         let users = [...this.props.users];
-        users[id].editing  = !users[id].editing;
-        console.log(users[id]);
-        if(currentlyEditing[id])
-            currentlyEditing[id] = undefined;
-        else
+        if(currentlyEditing[id]) {
+            users[id].editing = false;
+            delete currentlyEditing[id];
+        }
+        else{
             currentlyEditing[id] = {...users[id]};
-        console.log(currentlyEditing);
+            users[id].editing = true;
+        }
+        this.props.updateUsersLocal(users);
         this.setState({currentlyEditing: currentlyEditing});
     }
 
@@ -29,8 +36,7 @@ class UserTable extends React.Component {
             name: '',
             gender: 'male',
             hobbies: '',
-            active: '',
-            editing: false
+            active: ''
         };
         if(this.state.currentlyAdding)
             currentlyAdding = null;
@@ -38,55 +44,43 @@ class UserTable extends React.Component {
     }
 
     changeHandler = (id, event) => {
-        let currentlyEditing = [...this.state.currentlyEditing];
-        // console.log(event.target.name, '---', event.target.value);
+        let currentlyEditing = {...this.state.currentlyEditing};
         currentlyEditing[id][event.target.name] = event.target.value;
         console.log(currentlyEditing);
         this.setState({currentlyEditing: currentlyEditing});
     }
 
     updateHandler = id => {
-        let currentlyEditing = [...this.state.currentlyEditing];
-        let users = [...this.props.users];
-        let hobbies = [];
+        let currentlyEditing = {...this.state.currentlyEditing};
         currentlyEditing[id].editing = false;
-        users[id] = currentlyEditing[id];
-        currentlyEditing[id] = undefined;
-        hobbies = users[id].hobbies.split(',');
+        const updatedUser = currentlyEditing[id];
+        delete currentlyEditing[id];
+        let hobbies = updatedUser.hobbies.split(',');
         hobbies.forEach((ele, index, arr) => arr[index] = ele.trim().toLowerCase());
-        let updatedHobbies = [...new Set(this.props.hobbies.concat(hobbies))];
-        console.log(updatedHobbies);
-        this.props.updateUsers(users);
-        this.props.updateHobbies(updatedHobbies);
+        let newHobbies = [...new Set(this.props.hobbies.concat(hobbies))];
+        this.props.updateData({updatedUser: updatedUser, newHobbies: newHobbies, id: id, currentlyEditing: currentlyEditing});
         this.setState({currentlyEditing: currentlyEditing});
     }
 
     deleteHandler = id => {
         let users = [...this.props.users];
-        let currentlyEditing = [...this.state.currentlyEditing];
         users.splice(id, 1);
-        currentlyEditing.splice(id, 1);
-        this.props.updateUsers(users);
-        this.setState({currentlyEditing: currentlyEditing});
+        this.props.deleteUser(id);
     }
 
     newRowInputChangeHandler = event => {
         let currentlyAdding = {...this.state.currentlyAdding};
-        // console.log(event.target.name, '---', event.target.value);
         currentlyAdding[event.target.name] = event.target.value;
         this.setState({currentlyAdding: currentlyAdding});
     }
 
     addHandler = () => {
-        let users = [...this.props.users];
         let newUser = {...this.state.currentlyAdding};
         let hobbies = [];
-        users.push(newUser);
         hobbies = newUser.hobbies.split(',');
         hobbies.forEach((ele, index, arr) => arr[index] = ele.trim().toLowerCase());
         let updatedHobbies = [...new Set(this.props.hobbies.concat(hobbies))];
-        this.props.updateUsers(users);
-        this.props.updateHobbies(updatedHobbies);
+        this.props.addUser({newUser: newUser, updatedHobbies: updatedHobbies});
         this.setState({currentlyAdding: null});
     }
 
@@ -140,8 +134,11 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        updateUsers: users => dispatch(updateUsers(users)),
-        updateHobbies: hobbies => dispatch(updateHobbies(hobbies)),
+        fetchDataInit: editing => dispatch(fetchDataInit(editing)),
+        addUser: updatedObj => dispatch(addUser(updatedObj)),
+        updateData: updatedObj => dispatch(updateData(updatedObj)),
+        deleteUser: id => dispatch(deleteUser(id)),
+        updateUsersLocal: users => dispatch(updateUsersLocal(users))
     }
 }
 
