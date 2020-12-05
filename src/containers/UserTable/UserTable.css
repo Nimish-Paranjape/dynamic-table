@@ -1,0 +1,16 @@
+html, body {
+    box-sizing: border-box;
+}
+
+.user-table {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.user-table table {
+    margin: auto;
+}
+
+.add-btn {
+    color: red;
+}

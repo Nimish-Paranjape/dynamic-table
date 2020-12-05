@@ -1,5 +1,7 @@
 import React from 'react';
+import './UserTable.css';
 import TableRow from '../../components/TableRow/TableRow'
+import NewRow from '../../components/NewRow/NewRow';
 
 class UserTable extends React.Component {
     state = {
@@ -9,6 +11,8 @@ class UserTable extends React.Component {
             {name: 'Female3', gender: 'female', hobbies: 'pilates', active: 'Yes', editing: false}
         ],
         currentlyEditing: [],
+        addingRow: false,
+        currentlyAdding: null,
         hobbies: ['dancing']
     }
 
@@ -23,6 +27,19 @@ class UserTable extends React.Component {
         else
             currentlyEditing[id] = {...users[id]};
         this.setState({users: users, currentlyEditing: currentlyEditing});
+    }
+
+    toggleAdd = () => {
+        let currentlyAdding = {
+            name: '',
+            gender: 'male',
+            hobbies: '',
+            active: '',
+            editing: false
+        };
+        if(this.state.currentlyAdding)
+            currentlyAdding = null;
+        this.setState({addingRow: !this.state.addingRow, currentlyAdding: currentlyAdding});
     }
 
     changeHandler = (id, event) => {
@@ -54,34 +71,61 @@ class UserTable extends React.Component {
         this.setState({users: users});
     }
 
+    newRowInputChangeHandler = event => {
+        let currentlyAdding = {...this.state.currentlyAdding};
+        console.log(event.target.name, '---', event.target.value);
+        currentlyAdding[event.target.name] = event.target.value;
+        this.setState({currentlyAdding: currentlyAdding});
+    }
+
+    addHandler = () => {
+        let users = [...this.state.users];
+        let newUser = {...this.state.currentlyAdding};
+        let hobbies = [];
+        users.push(newUser);
+        hobbies = newUser.hobbies.split(',');
+        hobbies.forEach((ele, index, arr) => arr[index] = ele.trim().toLowerCase());
+        let updatedHobbies = [...new Set(this.state.hobbies.concat(hobbies))];
+        this.setState({users: users, currentlyAdding: null, hobbies: updatedHobbies, addingRow: false});
+    }
+
     render() {
         console.log(this.state.currentlyEditing);
         return (
-            <div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Gender</th>
-                            <th>Hobbies</th>
-                            <th>Active</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.state.users.map((user, index) => (
-                            <TableRow
-                                key={index}
-                                id={index} 
-                                user={user}
-                                toggle={this.toggleEdit}
-                                update={this.updateHandler}
-                                delete={this.deleteHandler}
-                                change={this.changeHandler}
-                                list={this.state.hobbies} />
-                        ))}
-                    </tbody>
-                </table>
+            <div className='container-div'>
+                <div className='user-table'>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Gender</th>
+                                <th>Hobbies</th>
+                                <th>Active</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {this.state.addingRow ? 
+                                <NewRow 
+                                    inputChange={this.newRowInputChangeHandler}
+                                    cancelAdd={this.toggleAdd}
+                                    addRow={this.addHandler}
+                                    list={this.state.hobbies}/> : null}
+                            {this.state.users.map((user, index) => (
+                                <TableRow
+                                    key={index}
+                                    id={index} 
+                                    user={user}
+                                    toggle={this.toggleEdit}
+                                    update={this.updateHandler}
+                                    delete={this.deleteHandler}
+                                    change={this.changeHandler}
+                                    list={this.state.hobbies} />
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                <button className='btn add-btn' onClick={this.toggleAdd}>Add</button>
             </div>
         );
     }
