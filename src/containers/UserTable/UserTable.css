@@ -64,6 +64,6 @@ button:hover {
     font-size: x-large;
 }
 
-.edit-div select:hover {
+.edit-div label:hover {
     cursor: pointer;
 }

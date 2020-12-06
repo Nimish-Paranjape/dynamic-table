@@ -1,11 +1,19 @@
 import React from 'react';
+import { Multiselect } from 'multiselect-react-dropdown';
 
 const tableRow = props => {
+
+    let options = props.hobbies.map(hobby => {
+        return {
+            value: hobby
+        };
+    });
+
     let tableRow = (
         <tr>
             <td><div>{props.user.name}</div></td>
             <td><div>{props.user.gender}</div></td>
-            <td><div>{props.user.hobbies}</div></td>
+            <td><div>{props.user.hobbies.toString()}</div></td>
             <td><div>{props.user.active}</div></td>
             <td>
                 <i className="fa fa-pencil" onClick={() => props.toggle(props.id)}></i>
@@ -36,15 +44,7 @@ const tableRow = props => {
                 </td>
                 <td>
                     <div>
-                        <input  
-                            list='list'
-                            name='hobbies'
-                            onChange={(e) => props.change(props.id, e)}></input>
-                        <datalist id='list'>
-                            {props.list.map((hobby, index) => (
-                                <option value={hobby} key={index}/>
-                            ))}
-                        </datalist>
+                        <Multiselect options={options} onSearch={e => props.change(props.id, e)} displayValue={'value'} onSelect={props.select} />
                     </div>
                 </td>
                 <td>
@@ -66,4 +66,4 @@ const tableRow = props => {
     return tableRow;
 }
 
-export default tableRow;
+export default tableRow

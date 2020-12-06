@@ -8,7 +8,9 @@ import NewRow from '../../components/NewRow/NewRow';
 class UserTable extends React.Component {
     state = {
         currentlyEditing: null,
-        currentlyAdding: null
+        currentlyAdding: null,
+        tempArray: [],
+        tempArray2: []
     }
 
     componentDidMount() {
@@ -34,7 +36,7 @@ class UserTable extends React.Component {
         let currentlyAdding = {
             name: '',
             gender: 'male',
-            hobbies: '',
+            hobbies: [],
             active: ''
         };
         if(this.state.currentlyAdding)
@@ -44,8 +46,15 @@ class UserTable extends React.Component {
 
     changeHandler = (id, event) => {
         let currentlyEditing = {...this.state.currentlyEditing};
-        currentlyEditing[id][event.target.name] = event.target.value;
-        this.setState({currentlyEditing: currentlyEditing});
+        let tempArr = [...this.state.tempArray];
+        if(event.target)
+            currentlyEditing[id][event.target.name] = event.target.value;
+        else {
+            tempArr = event.split(',');
+            tempArr.forEach((ele, index, arr) => arr[index] = ele.trim().toLowerCase());
+            tempArr = tempArr.filter(ele => ele!=='');
+        }
+        this.setState({currentlyEditing: currentlyEditing, tempArray: tempArr});
     }
 
     updateHandler = id => {
@@ -53,11 +62,11 @@ class UserTable extends React.Component {
         currentlyEditing[id].editing = false;
         const updatedUser = currentlyEditing[id];
         delete currentlyEditing[id];
-        let hobbies = updatedUser.hobbies.split(',');
-        hobbies.forEach((ele, index, arr) => arr[index] = ele.trim().toLowerCase());
-        let newHobbies = [...new Set(this.props.hobbies.concat(hobbies))];
+        if(this.state.tempArray[0] || this.state.tempArray2[0])
+            updatedUser.hobbies = this.state.tempArray2.concat(this.state.tempArray);
+        let newHobbies = [...new Set(this.props.hobbies.concat(updatedUser.hobbies))];
+        this.setState({currentlyEditing: currentlyEditing, tempArray: [], tempArray2: []});
         this.props.updateData({updatedUser: updatedUser, newHobbies: newHobbies, id: id, currentlyEditing: currentlyEditing});
-        this.setState({currentlyEditing: currentlyEditing});
     }
 
     deleteHandler = id => {
@@ -68,18 +77,35 @@ class UserTable extends React.Component {
 
     newRowInputChangeHandler = event => {
         let currentlyAdding = {...this.state.currentlyAdding};
-        currentlyAdding[event.target.name] = event.target.value;
+        let tempArr = [...this.state.tempArray];
+        if(event.target)
+            currentlyAdding[event.target.name] = (event.target.value).trim();
+        else {
+            tempArr = event.split(',');
+            tempArr.forEach((ele, index, arr) => arr[index] = ele.trim().toLowerCase());
+            tempArr = tempArr.filter(ele => ele!=='');
+        }
+        this.setState({currentlyAdding: currentlyAdding, tempArray: tempArr});
+    }
+
+    selectedHobbyAdd = hobbiesArr => {
+        let currentlyAdding = {...this.state.currentlyAdding};
+        currentlyAdding.hobbies = hobbiesArr.map(ele => ele.value);
         this.setState({currentlyAdding: currentlyAdding});
+    }
+
+    selectedHobbyEdit = (hobbiesArr, id) => {
+        let tempArr = []
+        tempArr = hobbiesArr.map(ele => ele.value);
+        this.setState({tempArray2: tempArr});
     }
 
     addHandler = () => {
         let newUser = {...this.state.currentlyAdding};
-        let hobbies = [];
-        hobbies = newUser.hobbies.split(',');
-        hobbies.forEach((ele, index, arr) => arr[index] = ele.trim().toLowerCase());
-        let updatedHobbies = [...new Set(this.props.hobbies.concat(hobbies))];
+        newUser.hobbies = newUser.hobbies.concat(this.state.tempArray);
+        let updatedHobbies = [...new Set(this.props.hobbies.concat(newUser.hobbies))];
         this.props.addUser({newUser: newUser, updatedHobbies: updatedHobbies});
-        this.setState({currentlyAdding: null});
+        this.setState({currentlyAdding: null, tempArray: []});
     }
 
     render() {
@@ -102,9 +128,10 @@ class UserTable extends React.Component {
                                     inputChange={this.newRowInputChangeHandler}
                                     cancelAdd={this.toggleAdd}
                                     addRow={this.addHandler}
-                                    list={this.props.hobbies}/> : null}
+                                    select={this.selectedHobbyAdd} /> : null}
                             {this.props.users.map((user, index) => (
                                 <TableRow
+                                    hobbies={this.props.hobbies}
                                     key={index}
                                     id={index} 
                                     user={user}
@@ -112,7 +139,7 @@ class UserTable extends React.Component {
                                     update={this.updateHandler}
                                     delete={this.deleteHandler}
                                     change={this.changeHandler}
-                                    list={this.props.hobbies} />
+                                    select={this.selectedHobbyEdit} />
                             ))}
                         </tbody>
                     </table>
