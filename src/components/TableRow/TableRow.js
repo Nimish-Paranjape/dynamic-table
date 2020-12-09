@@ -49,9 +49,9 @@ const tableRow = props => {
                 </td>
                 <td>
                     <div>
-                        <input type='radio' id='yes' name='active' value='Yes' onChange={e => props.change(props.id, e)}></input>
+                        <input type='radio' id='yes' name='active' value='Yes' checked={props.user.active==='Yes'} onChange={e => props.change(props.id, e)}></input>
                         <label htmlFor='yes'>Yes</label>
-                        <input type='radio' id='no' name='active' value='No' onChange={e => props.change(props.id, e)}></input>
+                        <input type='radio' id='no' name='active' value='No' checked={props.user.active==='No'} onChange={e => props.change(props.id, e)}></input>
                         <label htmlFor='no'>No</label>
                     </div>
                 </td>
