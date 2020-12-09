@@ -2,7 +2,6 @@ import React from 'react';
 import { Multiselect } from 'multiselect-react-dropdown';
 
 const tableRow = props => {
-
     let options = props.hobbies.map(hobby => {
         return {
             value: hobby
